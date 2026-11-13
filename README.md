@@ -2,7 +2,7 @@
 
 Bir kitap ve kırtasiye toptancısının 2020 yılına ait B2B satış verisiyle hazırlanmış karar destek paneli. Panel; satış, pazarlama ve tedarik zinciri yöneticilerinin geçmişi görmesini ve gelecek ay için tahminlere dayalı karar vermesini amaçlar.
 
-**Canlı panel:** 
+**Canlı panel:** https://veri-madenciligi-odev-puggkd8tka3coki9fmxjez.streamlit.app/
 
 ## Dosyalar
 
