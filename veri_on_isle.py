@@ -421,8 +421,9 @@ def parquet_kaydet(df, rapor, yol=PARQUET_YOLU, rapor_yolu=RAPOR_YOLU):
         }, f, ensure_ascii=False, indent=1, default=float)
 
 
-def parquet_oku(yol=PARQUET_YOLU, rapor_yolu=RAPOR_YOLU):
-    df = pd.read_parquet(yol, engine="pyarrow")
+def parquet_oku(yol=PARQUET_YOLU, rapor_yolu=RAPOR_YOLU, kolonlar=None):
+    """kolonlar verilirse yalnızca bu sütunlar okunur (bellek tasarrufu)."""
+    df = pd.read_parquet(yol, engine="pyarrow", columns=kolonlar)
     with open(rapor_yolu, encoding="utf-8") as f:
         r = json.load(f)
     rapor = {"adimlar": pd.DataFrame(r["adimlar"]), "eksik": pd.DataFrame(r["eksik"]), "ozet": r["ozet"],

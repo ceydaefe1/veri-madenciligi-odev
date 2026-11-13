@@ -85,12 +85,20 @@ def tr_ay(ts):
     return f"{TR_AYLAR[ts.month]} {ts.year}"
 
 
-@st.cache_data(show_spinner="Veri yükleniyor…")
+# Panelin kullandığı sütunlar. Geri kalanı yüklenmez: ücretsiz bulut ~1 GB bellek verir ve
+# 654 bin satırlık tablonun gereksiz sütunları belleği taşırıyordu.
+KULLANILAN_SUTUNLAR = ["InvoiceNo", "CustomerID", "InvoiceDate", "StockCode", "Description", "Category",
+                       "Quantity", "Tutar", "ListeTutar", "IskontoTutari", "IskontoOrani", "Ay",
+                       "CovidDonemi", "KategoriGrubu", "Il"]
+
+
+# cache_resource: tablo oturumlar arasında kopyalanmadan paylaşılır (cache_data her çağrıda kopya üretir).
+@st.cache_resource(show_spinner="Veri yükleniyor…")
 def veri_yukle(degisme_zamani):
     """Önce sıkıştırılmış Parquet'i okur (hızlı yol). Parquet yoksa ya da ham Excel daha yeniyse
     Excel'i ön işler ve Parquet'i yeniden yazar. degisme_zamani, dosya değişince önbelleği yeniler."""
     if guncel_mi():
-        df, rapor = parquet_oku()
+        df, rapor = parquet_oku(kolonlar=KULLANILAN_SUTUNLAR)
         kaynak = PARQUET_DOSYASI
     else:
         df, rapor = veri_hazirla(VERI_YOLU)
@@ -98,8 +106,10 @@ def veri_yukle(degisme_zamani):
             parquet_kaydet(df, rapor)
         except OSError:
             pass
+        df = df[KULLANILAN_SUTUNLAR].copy()
         kaynak = VERI_DOSYASI
-    df["City"] = df["Il"]          # panel resmi il adlarıyla çalışır
+    df["City"] = df.pop("Il")       # panel resmi il adlarıyla çalışır
+    df["CovidDonemi"] = df["CovidDonemi"].astype(str).astype("category")
     # Ürün karmasına göre beklenen iskonto: her ürünün tüm satışlardaki ağırlıklı iskonto oranı.
     # Fazla iskonto = verilen iskonto − bu ürünlerin olağan iskontosu (müşteriye özel ek indirim).
     g = df.groupby("StockCode")[["IskontoTutari", "ListeTutar"]].sum()
@@ -254,7 +264,8 @@ def etken_grupla(etken):
 def musteri_tahminleri(_veri, esik_yuzdelik, secilen_model, veri_kimligi):
     """Seçilen modelle müşteri bazında gelecek ay tahmini, geçmiş aylarda tahmin-gerçekleşen karşılaştırması,
     kalibre edilmiş olasılıklar ve tahmini etkileyen etkenler."""
-    d = _veri.assign(Ay=_veri["InvoiceDate"].dt.to_period("M"))
+    d = _veri[["InvoiceNo", "CustomerID", "InvoiceDate", "Quantity", "Tutar", "City", "Category", "KategoriGrubu"]] \
+        .assign(Ay=_veri["InvoiceDate"].dt.to_period("M"))
     son_gercek = d["Ay"].max()
 
     fatura = d.groupby(["InvoiceNo", "CustomerID", "Ay"]).agg(
@@ -370,7 +381,8 @@ def musteri_tahminleri(_veri, esik_yuzdelik, secilen_model, veri_kimligi):
     sonuc["sira"] = range(1, len(sonuc) + 1)
 
     # 6) Kategori talebi: beklenen büyük sipariş cirosu müşterilerin büyük sipariş kategori payına dağıtılır
-    satir = d.merge(fatura[["InvoiceNo", "CustomerID", "buyuk"]], on=["InvoiceNo", "CustomerID"], how="left")
+    satir = d[["InvoiceNo", "CustomerID", "Ay", "KategoriGrubu", "Tutar"]].merge(
+        fatura[["InvoiceNo", "CustomerID", "buyuk"]], on=["InvoiceNo", "CustomerID"], how="left")
     son6_buyuk = satir[(satir["buyuk"]) & (satir["Ay"] > son_gercek - 6)]
     pay = son6_buyuk.groupby(["CustomerID", "KategoriGrubu"])["Tutar"].sum()
     pay = (pay / pay.groupby(level=0).transform("sum")).rename("pay").reset_index()
@@ -458,6 +470,11 @@ def il_anahtari(ad):
 IL_BOLGE_ANAHTAR.update({il_anahtari(il): b for il, b in IL_BOLGE.items()})
 
 
+def il_anahtar_serisi(sehirler):
+    """il_anahtari'yı her satıra değil, yalnızca farklı şehir adlarına (≈80) uygular: ~8000 kat daha az çağrı."""
+    return sehirler.map({s: il_anahtari(s) for s in sehirler.unique()})
+
+
 @st.cache_data
 def il_haritasi_yukle():
     """İl sınırlarını önce klasördeki dosyadan, yoksa internetten okur (ve klasöre kaydeder)."""
@@ -480,7 +497,7 @@ def il_haritasi_yukle():
 
 def il_tablosu(_df, geo):
     """İl bazında ciro, adet, müşteri, sipariş ve son 3 ay büyümesi; 81 ilin tamamı (satış olmayanlar 0)."""
-    d = _df.assign(anahtar=_df["City"].map(il_anahtari))
+    d = _df.assign(anahtar=il_anahtar_serisi(_df["City"]))
     bitis = d["InvoiceDate"].max()
     s3 = d["InvoiceDate"] > bitis - pd.DateOffset(months=3)
     o3 = (d["InvoiceDate"] > bitis - pd.DateOffset(months=6)) & ~s3
@@ -1051,7 +1068,7 @@ def sayfa_genel():
         if len(satisli):
             il_sec = st.selectbox("İl", satisli["İl"].tolist(), key="il_sec")
             ir = satisli.set_index("İl").loc[il_sec]
-            idf = df[df["City"].map(il_anahtari) == ir["anahtar"]]
+            idf = df[il_anahtar_serisi(df["City"]) == ir["anahtar"]]
             i1, i2, i3, i4 = st.columns(4)
             i1.metric("Ciro", tr_sayi(ir["ciro"]),
                       None if np.isnan(ir["buyume"]) else f"%{tr_sayi(ir['buyume'], 1)} son 3 ay")
