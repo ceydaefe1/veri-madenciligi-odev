@@ -1,0 +1,237 @@
+{
+ "adimlar": [
+  {
+   "No": 1,
+   "Aşama": "Temizleme",
+   "Adım": "Ham veri okundu",
+   "Önce (satır)": 664154,
+   "Sonra (satır)": 664154,
+   "Etkilenen": 0,
+   "İşlem": "—",
+   "Gerekçe": "Excel dosyası değiştirilmeden, hiçbir değer kendiliğinden eksik sayılmadan okundu."
+  },
+  {
+   "No": 2,
+   "Aşama": "Temizleme",
+   "Adım": "Kitap adı tür düzeltmesi",
+   "Önce (satır)": 664154,
+   "Sonra (satır)": 664154,
+   "Etkilenen": 917,
+   "İşlem": "Metne çevrildi",
+   "Gerekçe": "Excel bazı kitap adlarını sayı, tarih ya da saat sanmış (örn. '1984', '22/11/63', '3:01')."
+  },
+  {
+   "No": 3,
+   "Aşama": "Temizleme",
+   "Adım": "Boşluk kırpma",
+   "Önce (satır)": 664154,
+   "Sonra (satır)": 664154,
+   "Etkilenen": 15070,
+   "İşlem": "Baş/son boşluklar silindi",
+   "Gerekçe": "'Roman' ile 'Roman ' aynı kategori iken ayrı sayılıyordu."
+  },
+  {
+   "No": 4,
+   "Aşama": "Temizleme",
+   "Adım": "Yer tutucular",
+   "Önce (satır)": 664154,
+   "Sonra (satır)": 664154,
+   "Etkilenen": 6867,
+   "İşlem": "Eksik değer yapıldı",
+   "Gerekçe": "NULL, #YOK, Bilinmeyen, '-' gibi metinler gerçek değer değil: Description 1, Category 64, City 6,802."
+  },
+  {
+   "No": 5,
+   "Aşama": "Temizleme",
+   "Adım": "Tür dönüşümü",
+   "Önce (satır)": 664154,
+   "Sonra (satır)": 664154,
+   "Etkilenen": 6,
+   "İşlem": "Sayı ve tarih türüne çevrildi",
+   "Gerekçe": "Hesaplama için gerekli. Sayıya/tarihe çevrilemeyen değerler (örn. 'NULL') eksik sayıldı: Quantity 6."
+  },
+  {
+   "No": 6,
+   "Aşama": "Temizleme",
+   "Adım": "Kritik alanı eksik satırlar",
+   "Önce (satır)": 664154,
+   "Sonra (satır)": 664148,
+   "Etkilenen": 6,
+   "İşlem": "Silindi",
+   "Gerekçe": "Tarih, adet, fiyat, fatura, müşteri veya ürün kodu olmadan ciro ve trend hesaplanamaz."
+  },
+  {
+   "No": 7,
+   "Aşama": "Temizleme",
+   "Adım": "Geçersiz değerli satırlar",
+   "Önce (satır)": 664148,
+   "Sonra (satır)": 664133,
+   "Etkilenen": 15,
+   "İşlem": "Silindi",
+   "Gerekçe": "Adet ≤ 0: 5; Net fiyat ≤ 0: 10; Liste fiyatı < 1 TL (yer tutucu): 9; Net fiyat > liste fiyatı: 5. Satış verisinde anlamsız değerler (kesişenler bir kez sayıldı)."
+  },
+  {
+   "No": 8,
+   "Aşama": "Temizleme",
+   "Adım": "Eksik şehir/kategori/ürün adı",
+   "Önce (satır)": 664133,
+   "Sonra (satır)": 664133,
+   "Etkilenen": 6867,
+   "İşlem": "'Bilinmiyor' yazıldı",
+   "Gerekçe": "Satış gerçek; silinirse ciro eksik kalır. Bu müşterilerin başka satırlarında da şehir yok. City 6,802, Category 64, Description 1."
+  },
+  {
+   "No": 9,
+   "Aşama": "Temizleme",
+   "Adım": "Tekrarlayan satırlar",
+   "Önce (satır)": 664133,
+   "Sonra (satır)": 654089,
+   "Etkilenen": 10044,
+   "İşlem": "Adetleri toplanarak birleştirildi",
+   "Gerekçe": "Aynı fatura-ürün-fiyatla tekrarlayan satırlar (bunların 6,213 tanesi adet dahil birebir aynı). Kalem numarası olmadığı için kopya kayıt olduğu kanıtlanamıyor; B2B'de aynı gün verilen siparişler tek faturada toplanabildiğinden gerçek sipariş kabul edildi. Ciro değişmedi (29,579,960 → 29,579,960 TL)."
+  },
+  {
+   "No": 10,
+   "Aşama": "Temizleme",
+   "Adım": "Aykırı değerler",
+   "Önce (satır)": 654089,
+   "Sonra (satır)": 654089,
+   "Etkilenen": 1520,
+   "İşlem": "İşaretlendi (silinmedi)",
+   "Gerekçe": "Adet > 100: 866 satır; liste fiyatı > 147 TL (%99,9 dilim): 654 satır. B2B'de toplu alım ve pahalı setler gerçek satıştır; silmek ciroyu bozar."
+  },
+  {
+   "No": 11,
+   "Aşama": "Türetme",
+   "Adım": "Ciro ve iskonto",
+   "Önce (satır)": 654089,
+   "Sonra (satır)": 654089,
+   "Etkilenen": 654089,
+   "İşlem": "Tutar, ListeTutar, IskontoTutari, IskontoOrani",
+   "Gerekçe": "Tutar = adet × net fiyat; ListeTutar = adet × liste fiyatı; İskonto oranı = 1 − net fiyat / liste fiyatı."
+  },
+  {
+   "No": 12,
+   "Aşama": "Türetme",
+   "Adım": "Zaman boyutları",
+   "Önce (satır)": 654089,
+   "Sonra (satır)": 654089,
+   "Etkilenen": 654089,
+   "İşlem": "Ay, Ceyrek, HaftaninGunu, CovidDonemi",
+   "Gerekçe": "Aylık trend, sezonsallık ve haftalık talep analizi için. COVID dönemleri: ilk vaka (11 Mart), normalleşme (1 Haziran), hafta sonu kısıtlamaları (20 Kasım)."
+  },
+  {
+   "No": 13,
+   "Aşama": "Türetme",
+   "Adım": "Kategori grupları",
+   "Önce (satır)": 654089,
+   "Sonra (satır)": 654089,
+   "Etkilenen": 306,
+   "İşlem": "KategoriGrubu",
+   "Gerekçe": "306 alt kategori, kural tabanlı eşlemeyle 14 gruba toplandı; 'Diğer'e düşen satır payı %0.3."
+  },
+  {
+   "No": 14,
+   "Aşama": "Türetme",
+   "Adım": "İl ve bölge",
+   "Önce (satır)": 654089,
+   "Sonra (satır)": 654089,
+   "Etkilenen": 78,
+   "İşlem": "PlakaKodu, Il, Bolge",
+   "Gerekçe": "Farklı şehir yazımları (İZMİR, Izmir, K.MARAS) resmi il adı, plaka ve coğrafi bölgeye eşlendi. Eşleşmeyen şehir yok."
+  },
+  {
+   "No": 15,
+   "Aşama": "Türetme",
+   "Adım": "Ürün türü ve kampanya",
+   "Önce (satır)": 654089,
+   "Sonra (satır)": 654089,
+   "Etkilenen": 8516,
+   "İşlem": "UrunTuru, Kampanya",
+   "Gerekçe": "ISBN 978/979 ile başlayan kodlar kitap, diğerleri kitap dışı (puzzle, kırtasiye vb.). Adında 'Kampanya' ya da 'İadesiz' geçen 2,325 satır kampanyalı işaretlendi."
+  },
+  {
+   "No": 16,
+   "Aşama": "Türetme",
+   "Adım": "Ana müşteri",
+   "Önce (satır)": 654089,
+   "Sonra (satır)": 654089,
+   "Etkilenen": 74,
+   "İşlem": "AnaMusteriID",
+   "Gerekçe": "74 şube kodu ('A01212-02' gibi) ana müşteri altında toplandı: 1,201 müşteri kodu → 1,132 ana müşteri. Ekin şube/teslimat noktası olduğu varsayıldı."
+  }
+ ],
+ "eksik": [
+  {
+   "Sütun": "InvoiceNo",
+   "Eksik (temizlik öncesi)": 0,
+   "Eksik (temizlik sonrası)": 0,
+   "Oran (%)": 0.0
+  },
+  {
+   "Sütun": "CustomerID",
+   "Eksik (temizlik öncesi)": 0,
+   "Eksik (temizlik sonrası)": 0,
+   "Oran (%)": 0.0
+  },
+  {
+   "Sütun": "InvoiceDate",
+   "Eksik (temizlik öncesi)": 0,
+   "Eksik (temizlik sonrası)": 0,
+   "Oran (%)": 0.0
+  },
+  {
+   "Sütun": "StockCode",
+   "Eksik (temizlik öncesi)": 0,
+   "Eksik (temizlik sonrası)": 0,
+   "Oran (%)": 0.0
+  },
+  {
+   "Sütun": "Description",
+   "Eksik (temizlik öncesi)": 1,
+   "Eksik (temizlik sonrası)": 0,
+   "Oran (%)": 0.0
+  },
+  {
+   "Sütun": "Category",
+   "Eksik (temizlik öncesi)": 64,
+   "Eksik (temizlik sonrası)": 0,
+   "Oran (%)": 0.01
+  },
+  {
+   "Sütun": "City",
+   "Eksik (temizlik öncesi)": 6802,
+   "Eksik (temizlik sonrası)": 0,
+   "Oran (%)": 1.024
+  },
+  {
+   "Sütun": "Quantity",
+   "Eksik (temizlik öncesi)": 6,
+   "Eksik (temizlik sonrası)": 0,
+   "Oran (%)": 0.001
+  },
+  {
+   "Sütun": "NetPrice",
+   "Eksik (temizlik öncesi)": 0,
+   "Eksik (temizlik sonrası)": 0,
+   "Oran (%)": 0.0
+  },
+  {
+   "Sütun": "UnitPrice",
+   "Eksik (temizlik öncesi)": 0,
+   "Eksik (temizlik sonrası)": 0,
+   "Oran (%)": 0.0
+  }
+ ],
+ "ozet": {
+  "ham_satir": 664154,
+  "temiz_satir": 654089,
+  "silinen": 21,
+  "birlestirilen": 10044,
+  "duzeltilen_hucre": 22854,
+  "doldurulan": 6867,
+  "ciro": 29579960.18355338
+ },
+ "kaynak": "B2B_Transaction_Data_.xlsx",
+ "olusturma": "2026-11-13T10:41:39.145536+03:00"
+}
