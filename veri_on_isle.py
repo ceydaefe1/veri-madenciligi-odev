@@ -436,7 +436,8 @@ def guncel_mi():
         return False
     if not os.path.exists(VERI_YOLU):
         return True                          # bulutta yalnızca Parquet olabilir
-    return os.path.getmtime(PARQUET_YOLU) >= os.path.getmtime(VERI_YOLU)
+    # GitHub'dan indirilen dosyaların değişme zamanı rastgeledir (aynı saniyede yazılır); 5 dk tolerans tanınır.
+    return os.path.getmtime(PARQUET_YOLU) + 300 >= os.path.getmtime(VERI_YOLU)
 
 
 if __name__ == "__main__":
