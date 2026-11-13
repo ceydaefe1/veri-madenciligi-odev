@@ -1,10 +1,8 @@
 # B2B Satış ve Pazarlama Karar Paneli
 
-İTÜ ISL 533 Veri Madenciliği · Ödev I
-
 Bir kitap ve kırtasiye toptancısının 2020 yılına ait B2B satış verisiyle hazırlanmış karar destek paneli. Panel; satış, pazarlama ve tedarik zinciri yöneticilerinin geçmişi görmesini ve gelecek ay için tahminlere dayalı karar vermesini amaçlar.
 
-**Canlı panel:** _(Streamlit Community Cloud bağlantısı buraya)_
+**Canlı panel:** 
 
 ## Dosyalar
 
@@ -30,8 +28,6 @@ python veri_on_isle.py              # Excel -> temiz_veri.parquet (veri değişt
 streamlit run streamlit_app.py      # paneli açar
 python model_karsilastirma.py       # rapor tablolarını üretir
 ```
-
-Streamlit Community Cloud'a yüklerken `temiz_veri.parquet` ve `temiz_veri_rapor.json` dosyalarını depoya eklemek yeterlidir; panel Excel olmadan çalışır.
 
 ## Panel sayfaları
 
@@ -75,7 +71,7 @@ Kenar çubuğundaki dönem, il ve kategori grubu filtreleri Genel bakış, Ürü
 
 ## Sınırlılıklar
 
-- Veri yalnızca bir yılı kapsıyor; mevsimsellik ölçülemiyor. Nisan–Temmuz düşüşü büyük olasılıkla COVID ilk dalga kısıtlamalarından kaynaklanıyor ve mevsim etkisinden ayrılamıyor. Grafiklerde kısıtlama dönemleri gölgeli gösterilir.
+- Veri yalnızca bir yılı kapsıyor; mevsimsellik ölçülemiyor. Nisan–Temmuz düşüşü büyük olasılıkla COVID ilk dalga kısıtlamalarından kaynaklanıyor ve mevsim etkisinden ayrılamıyor.
 - Model müşterileri iyi sıralıyor, ancak toplam büyük sipariş sayısını test aylarında fazla tahmin ediyor; dönemler arasında gerçekleşme oranı değişiyor.
 - Ciro, adet ve sipariş sayısı özellikleri birbiriyle güçlü ilişkili (çoklu doğrusal bağlantı); bu yüzden etkenler panelde gruplanarak gösterilir.
 - Model ayarları sabit ve makul değerlerde tutuldu; ayrıntılı ayar araması yapılmadı.
