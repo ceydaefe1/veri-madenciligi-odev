@@ -1137,10 +1137,6 @@ def sayfa_genel():
     tr_ay_ekseni(fig, gunluk.index.to_period("M").to_timestamp())
     st.plotly_chart(fig, width="stretch")
 
-    with st.expander("Veri hazırlama adımları"):
-        tablo(hazirlik["adimlar"], hide_index=True, width="stretch",
-              column_config={c: sayi_kolonu(c) for c in ["Önce (satır)", "Sonra (satır)", "Etkilenen"]})
-
 # =====================================================================
 # TAHMİN
 # =====================================================================
